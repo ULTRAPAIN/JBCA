@@ -285,3 +285,4 @@ settings.backup.*
 # Deployment documentation (local only)
 DEPLOYMENT_GUIDE.md
 DEPLOYMENT_STEPS.md
+.gitignore
