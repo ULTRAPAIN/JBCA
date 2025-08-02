@@ -281,5 +281,7 @@ TODO.md
 # Configuration backups
 config.backup.*
 settings.backup.*
+
+# Deployment documentation (local only)
 DEPLOYMENT_GUIDE.md
 DEPLOYMENT_STEPS.md
