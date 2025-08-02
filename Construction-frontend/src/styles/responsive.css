@@ -1,0 +1,604 @@
+/* Enhanced Responsive Utilities for All Screen Sizes */
+
+/* Mobile First Breakpoints */
+/* xs: 0px and up (default) */
+/* sm: 640px and up */
+/* md: 768px and up */
+/* lg: 1024px and up */
+/* xl: 1280px and up */
+/* 2xl: 1536px and up */
+
+/* Additional breakpoints for large screens */
+@media (min-width: 1920px) {
+  .container-3xl {
+    max-width: 1920px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .container-4xl {
+    max-width: 2560px;
+  }
+}
+
+/* TV and Large Display Optimizations */
+@media (min-width: 1920px) {
+  /* Hero sections scale better on large screens */
+  .hero-text-3xl {
+    font-size: 5rem;
+    line-height: 1.1;
+  }
+  
+  .hero-subtitle-3xl {
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+  
+  /* Product grids for large screens */
+  .products-grid-3xl {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .products-grid-4xl {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (min-width: 2560px) {
+  .hero-text-4xl {
+    font-size: 7rem;
+    line-height: 1.05;
+  }
+  
+  .hero-subtitle-4xl {
+    font-size: 3rem;
+    line-height: 1.2;
+  }
+  
+  .products-grid-4xl {
+    grid-template-columns: repeat(10, 1fr);
+  }
+}
+
+/* Container Query Support */
+@container (min-width: 400px) {
+  .cq-card-sm {
+    padding: 1.5rem;
+  }
+}
+
+@container (min-width: 600px) {
+  .cq-card-md {
+    padding: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (min-width: 800px) {
+  .cq-card-lg {
+    padding: 2.5rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Responsive Typography Scale */
+.text-responsive-xs {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+}
+
+.text-responsive-sm {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+}
+
+.text-responsive-base {
+  font-size: clamp(1rem, 3vw, 1.125rem);
+}
+
+.text-responsive-lg {
+  font-size: clamp(1.125rem, 3.5vw, 1.25rem);
+}
+
+.text-responsive-xl {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+}
+
+.text-responsive-2xl {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+}
+
+.text-responsive-3xl {
+  font-size: clamp(1.875rem, 6vw, 2.5rem);
+}
+
+.text-responsive-4xl {
+  font-size: clamp(2.25rem, 7vw, 3rem);
+}
+
+.text-responsive-5xl {
+  font-size: clamp(3rem, 8vw, 4rem);
+}
+
+/* Responsive Spacing */
+.spacing-responsive-sm {
+  padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.spacing-responsive-md {
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.spacing-responsive-lg {
+  padding: clamp(2rem, 6vw, 4rem);
+}
+
+.spacing-responsive-xl {
+  padding: clamp(3rem, 8vw, 6rem);
+}
+
+/* Mobile Touch Optimizations */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .mobile-padding {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .mobile-text-lg {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tablet-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .tablet-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .tablet-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  
+  .tablet-text-lg {
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+  
+  .tablet-text-xl {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+  
+  .tablet-text-2xl {
+    font-size: 1.875rem;
+    line-height: 1.3;
+  }
+  
+  .tablet-gap-5 {
+    gap: 1.25rem;
+  }
+  
+  .tablet-gap-6 {
+    gap: 1.5rem;
+  }
+  
+  .tablet-gap-7 {
+    gap: 1.75rem;
+  }
+  
+  .tablet-p-5 {
+    padding: 1.25rem;
+  }
+  
+  .tablet-p-7 {
+    padding: 1.75rem;
+  }
+  
+  .tablet-p-9 {
+    padding: 2.25rem;
+  }
+  
+  .tablet-mb-10 {
+    margin-bottom: 2.5rem;
+  }
+  
+  .tablet-h-22 {
+    height: 5.5rem;
+  }
+  
+  .tablet-w-22 {
+    width: 5.5rem;
+  }
+  
+  /* Tablet specific hero section */
+  .tablet-hero-spacing {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+  
+  /* Tablet specific brand grid */
+  .tablet-brand-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  
+  /* Tablet specific feature layout */
+  .tablet-feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+  
+  /* Tablet specific contact layout */
+  .tablet-contact-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  
+  /* Tablet specific button sizing */
+  .tablet-btn-px {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+  
+  /* Tablet typography adjustments */
+  .tablet-responsive-text {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+  }
+  
+  /* Tablet card adjustments */
+  .tablet-card-padding {
+    padding: 1.75rem;
+  }
+  
+  .tablet-card-rounded {
+    border-radius: 1rem;
+  }
+}
+
+/* Laptop Optimizations */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .laptop-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .laptop-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .laptop-grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .laptop-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .laptop-padding {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  
+  .laptop-padding-lg {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+  
+  .laptop-text-xl {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+  
+  .laptop-text-2xl {
+    font-size: 1.875rem;
+    line-height: 1.3;
+  }
+  
+  .laptop-text-3xl {
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+  
+  .laptop-text-4xl {
+    font-size: 2.875rem;
+    line-height: 1.1;
+  }
+  
+  .laptop-gap-8 {
+    gap: 2rem;
+  }
+  
+  .laptop-gap-10 {
+    gap: 2.5rem;
+  }
+  
+  .laptop-gap-12 {
+    gap: 3rem;
+  }
+  
+  .laptop-gap-16 {
+    gap: 4rem;
+  }
+  
+  .laptop-p-8 {
+    padding: 2rem;
+  }
+  
+  .laptop-p-10 {
+    padding: 2.5rem;
+  }
+  
+  .laptop-p-12 {
+    padding: 3rem;
+  }
+  
+  .laptop-mb-16 {
+    margin-bottom: 4rem;
+  }
+  
+  .laptop-mb-20 {
+    margin-bottom: 5rem;
+  }
+  
+  .laptop-h-28 {
+    height: 7rem;
+  }
+  
+  .laptop-w-28 {
+    width: 7rem;
+  }
+  
+  /* Laptop specific hero section */
+  .laptop-hero-spacing {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+  
+  .laptop-hero-text {
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+  }
+  
+  /* Laptop specific brand grid */
+  .laptop-brand-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2rem;
+  }
+  
+  /* Laptop specific feature layout */
+  .laptop-feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
+  }
+  
+  /* Laptop specific contact layout */
+  .laptop-contact-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+  }
+  
+  /* Laptop specific button sizing */
+  .laptop-btn-px {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  
+  .laptop-btn-py {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  /* Laptop typography adjustments */
+  .laptop-responsive-text {
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  }
+  
+  .laptop-responsive-heading {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  
+  /* Laptop card adjustments */
+  .laptop-card-padding {
+    padding: 2.5rem;
+  }
+  
+  .laptop-card-rounded {
+    border-radius: 1.5rem;
+  }
+  
+  /* Laptop specific navbar adjustments */
+  .laptop-nav-spacing {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  
+  .laptop-nav-height {
+    height: 5rem;
+  }
+  
+  /* Laptop specific section spacing */
+  .laptop-section-py {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+  
+  .laptop-section-py-lg {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+/* Desktop Optimizations */
+@media (min-width: 1440px) and (max-width: 1920px) {
+  .desktop-grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .desktop-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Large Desktop/TV Optimizations */
+@media (min-width: 1920px) {
+  .tv-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .tv-grid-8 {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .tv-padding {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+  
+  .tv-text-scale {
+    font-size: calc(1rem + 0.5vw);
+  }
+}
+
+/* Ultra-wide and 4K Optimizations */
+@media (min-width: 2560px) {
+  .ultrawide-grid-10 {
+    grid-template-columns: repeat(10, 1fr);
+  }
+  
+  .ultrawide-grid-12 {
+    grid-template-columns: repeat(12, 1fr);
+  }
+  
+  .ultrawide-padding {
+    padding-left: 8rem;
+    padding-right: 8rem;
+  }
+  
+  .ultrawide-text-scale {
+    font-size: calc(1rem + 1vw);
+  }
+}
+
+/* Print Optimizations */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+  
+  .print-no-break {
+    page-break-inside: avoid;
+  }
+}
+
+/* High DPI Display Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .crisp-edges {
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .motion-reduce-friendly {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark Mode Optimizations */
+@media (prefers-color-scheme: dark) {
+  .auto-dark-bg {
+    background-color: #1e293b;
+    color: #f1f5f9;
+  }
+  
+  .auto-dark-border {
+    border-color: #475569;
+  }
+}
+
+/* Focus and Accessibility */
+.focus-visible:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.screen-reader-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Animation Classes for Responsive Design */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}

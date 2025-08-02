@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Storage</title>
+</head>
+<body>
+    <h1>Storage Cleaner</h1>
+    <button onclick="clearStorage()">Clear All Storage</button>
+    <script>
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('Storage cleared! Please refresh your application.');
+        }
+        
+        // Auto-clear on load
+        clearStorage();
+    </script>
+</body>
+</html>

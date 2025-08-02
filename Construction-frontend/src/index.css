@@ -1,0 +1,223 @@
+@import "tailwindcss";
+@import "./styles/animations.css";
+@import "./styles/responsive.css";
+
+/* Custom dark mode variant - override default prefers-color-scheme behavior */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Force dark mode styles to ensure they work */
+.dark {
+  color-scheme: dark;
+}
+
+/* Global styles with Tailwind-based theming */
+html {
+  scroll-behavior: smooth;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: all 0.3s ease;
+}
+
+/* Test dark mode - this should be visible */
+.dark body {
+  background-color: rgb(17 24 39) !important; /* gray-900 */
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+/* Custom scrollbar that respects dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Enhanced scrollbar for dark mode with glow effect */
+.dark ::-webkit-scrollbar-thumb {
+  box-shadow: 0 0 4px rgba(234, 179, 8, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.3);
+}
+
+/* Horizontal scroll enhancements */
+.horizontal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(209 213 219) rgb(243 244 246);
+}
+
+.dark .horizontal-scroll {
+  scrollbar-color: rgb(75 85 99) rgb(31 41 55);
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+  background-color: rgb(243 244 246);
+  border-radius: 9999px;
+}
+
+.dark .horizontal-scroll::-webkit-scrollbar-track {
+  background-color: rgb(31 41 55);
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(209 213 219);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.dark .horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99);
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(250 204 21);
+}
+
+.dark .horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(245 158 11);
+}
+
+/* Smooth scroll behavior for horizontal containers */
+.snap-x {
+  scroll-snap-type: x mandatory;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* Hide scrollbar completely for horizontal product sections */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Product card hover effects for horizontal scroll */
+.product-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .product-card-hover:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced related products horizontal scroll */
+#related-products-scroll {
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#related-products-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+#related-products-scroll::-webkit-scrollbar-track {
+  background-color: rgb(243 244 246);
+  border-radius: 2px;
+}
+
+.dark #related-products-scroll::-webkit-scrollbar-track {
+  background-color: rgb(31 41 55);
+}
+
+#related-products-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(209 213 219);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.dark #related-products-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99);
+}
+
+#related-products-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(250 204 21);
+}
+
+.dark #related-products-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(245 158 11);
+}
+
+/* Mobile touch improvements for product detail */
+@media (max-width: 640px) {
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Improve touch targets on mobile */
+  button, .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better tap highlighting */
+  .touch-feedback {
+    -webkit-tap-highlight-color: rgba(250, 204, 21, 0.2);
+  }
+}
+
+/* Tablet touch improvements for better interaction */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  .tablet-spacing {
+    margin: 1.25rem;
+  }
+  
+  .tablet-grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  /* Tablet-specific card hover effects */
+  .tablet-card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .tablet-card-hover:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 8px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .dark .tablet-card-hover:hover {
+    box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.25), 0 8px 8px -5px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Remove any old theme utility classes - using pure Tailwind now */
