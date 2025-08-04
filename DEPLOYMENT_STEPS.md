@@ -3,7 +3,7 @@
 ## Prerequisites Checklist
 - [ ] GitHub account
 - [ ] MongoDB Atlas account (free)
-- [ ] Railway account (free)  
+- [ ] Render account (free)  
 - [ ] Vercel account (free)
 
 ---
@@ -48,26 +48,32 @@ mongodb+srv://jaibhavani-admin:YOUR_PASSWORD@jaibhavani-cluster.xxxxx.mongodb.ne
 
 ---
 
-## 🖥️ STEP 2: Backend Deployment (Railway)
+## 🖥️ STEP 2: Backend Deployment (Render)
 
 ### 2.1 Prepare Your Code
 1. Ensure your code is in a Git repository
 2. Push latest changes to GitHub
 
-### 2.2 Deploy to Railway
-1. Go to https://railway.app
+### 2.2 Deploy to Render
+1. Go to https://render.com
 2. Sign in with GitHub
-3. Click "New Project"
-4. Select "Deploy from GitHub repo"
-5. Choose your repository
-6. Select the `construction-backend` folder as root directory
+3. Click "New +" → "Web Service"
+4. Connect your GitHub repository
+5. Select your repository from the list
+6. Configure the service:
+   - **Name**: `jaibhavani-backend`
+   - **Root Directory**: `construction-backend`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Instance Type**: `Free`
 
 ### 2.3 Configure Environment Variables
-In Railway dashboard, go to "Variables" tab and add:
+In Render dashboard, go to "Environment" tab and add:
 
 ```
 NODE_ENV=production
-PORT=5000
+PORT=10000
 MONGODB_URI=mongodb+srv://jaibhavani-admin:YOUR_PASSWORD@jaibhavani-cluster.xxxxx.mongodb.net/jaibhavani_cement
 JWT_SECRET=jaibhavani-cement-agency-super-secret-jwt-key-2024-production-make-it-very-long
 CORS_ORIGIN=https://your-frontend-domain.vercel.app
@@ -75,7 +81,7 @@ FRONTEND_URL=https://your-frontend-domain.vercel.app
 ```
 
 ### 2.4 Get Backend URL
-1. After deployment, Railway will provide a URL like: `https://construction-backend-production-xxxx.up.railway.app`
+1. After deployment, Render will provide a URL like: `https://jaibhavani-backend.onrender.com`
 2. Save this URL - you'll need it for frontend configuration
 
 ---
@@ -85,7 +91,7 @@ FRONTEND_URL=https://your-frontend-domain.vercel.app
 ### 3.1 Update Frontend API Configuration
 1. Update your `.env.production` file:
 ```
-VITE_API_URL=https://construction-backend-production-xxxx.up.railway.app/api
+VITE_API_URL=https://jaibhavani-backend.onrender.com/api
 VITE_APP_NAME=JaiBhavani Cement Agency
 ```
 
@@ -97,7 +103,7 @@ VITE_APP_NAME=JaiBhavani Cement Agency
 5. Set Framework Preset: "Vite"
 6. Set Root Directory: `Construction-frontend`
 7. Add Environment Variables:
-   - `VITE_API_URL`: Your Railway backend URL + `/api`
+   - `VITE_API_URL`: Your Render backend URL + `/api`
    - `VITE_APP_NAME`: `JaiBhavani Cement Agency`
 
 ### 3.3 Get Frontend URL
@@ -109,33 +115,37 @@ VITE_APP_NAME=JaiBhavani Cement Agency
 ## 🔄 STEP 4: Update CORS Configuration
 
 ### 4.1 Update Backend CORS
-1. Go back to Railway dashboard
+1. Go back to Render dashboard
 2. Update environment variables:
    - `CORS_ORIGIN`: Your Vercel frontend URL
    - `FRONTEND_URL`: Your Vercel frontend URL
-3. Redeploy the backend
+3. The service will automatically redeploy
 
 ---
 
 ## 🎯 STEP 5: Seed Database (Optional)
 
 ### 5.1 Run Database Seeding
-1. In Railway dashboard, go to "Deploy" tab
-2. Click on "View Logs"
-3. Use Railway CLI or connect to run seeding:
+1. In Render dashboard, go to your service
+2. Click on "Shell" tab to access terminal
+3. Run seeding commands:
 
 ```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login to Railway
-railway login
-
-# Connect to your project
-railway environment
+# Navigate to your project directory (if needed)
+cd /opt/render/project/src
 
 # Run seeding (if you have seed scripts)
-railway run node scripts/comprehensiveSeed.js
+node scripts/comprehensiveSeed.js
+```
+
+**Alternative method using local connection:**
+```bash
+# Install Render CLI (optional)
+npm install -g @render/cli
+
+# Or connect via environment variables locally
+# Set MONGODB_URI in your local .env and run:
+node scripts/comprehensiveSeed.js
 ```
 
 ---
@@ -150,8 +160,8 @@ railway run node scripts/comprehensiveSeed.js
 
 ### 6.2 Test Backend API
 1. Test API endpoints directly:
-   - `GET https://your-railway-url.railway.app/api/products`
-   - `POST https://your-railway-url.railway.app/api/auth/register`
+   - `GET https://jaibhavani-backend.onrender.com/api/products`
+   - `POST https://jaibhavani-backend.onrender.com/api/auth/register`
 
 ### 6.3 Test Full Integration
 1. Register a new user through frontend
@@ -171,7 +181,7 @@ railway run node scripts/comprehensiveSeed.js
 ### 7.2 Update Domain (Optional)
 1. Purchase a custom domain
 2. Configure Vercel to use your domain
-3. Update CORS settings in Railway
+3. Update CORS settings in Render
 
 ---
 
@@ -180,7 +190,7 @@ railway run node scripts/comprehensiveSeed.js
 ### Common Issues:
 
 **CORS Error:**
-- Check CORS_ORIGIN in Railway matches your Vercel URL exactly
+- Check CORS_ORIGIN in Render matches your Vercel URL exactly
 - Ensure no trailing slashes
 
 **Database Connection Error:**
@@ -194,9 +204,10 @@ railway run node scripts/comprehensiveSeed.js
 - Check build logs for specific errors
 
 **API Not Responding:**
-- Check Railway deployment logs
+- Check Render deployment logs
 - Verify environment variables are set
 - Test API endpoints directly
+- Note: Render free tier may have cold starts (first request might be slow)
 
 ---
 
@@ -204,8 +215,8 @@ railway run node scripts/comprehensiveSeed.js
 
 ### Check Logs:
 ```bash
-# Railway logs
-railway logs
+# Render logs
+# View in Render dashboard under "Logs" tab
 
 # Vercel logs  
 vercel logs
@@ -213,8 +224,12 @@ vercel logs
 
 ### Redeploy:
 ```bash
-# Railway
-railway up
+# Render
+# Push to GitHub - auto-deploys
+git push origin main
+
+# Or manual redeploy in Render dashboard
+# Go to your service → "Manual Deploy" → "Deploy latest commit"
 
 # Vercel (auto-deploys on Git push)
 git push origin main
@@ -228,7 +243,7 @@ Your JaiBhavani Cement Agency application is now live!
 
 **Your URLs:**
 - Frontend: `https://your-app.vercel.app`
-- Backend API: `https://your-backend.railway.app/api`
+- Backend API: `https://jaibhavani-backend.onrender.com/api`
 - Database: MongoDB Atlas
 
 **Test Credentials:**

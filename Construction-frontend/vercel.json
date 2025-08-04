@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "jaibhavani-cement-frontend",
   "builds": [
     {
       "src": "package.json",
@@ -23,7 +22,7 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "@vite_api_url",
+    "VITE_API_URL": "https://jbca.onrender.com/api",
     "VITE_APP_NAME": "JaiBhavani Cement Agency"
   }
 }
