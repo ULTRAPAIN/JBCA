@@ -27,7 +27,7 @@ const allowedOrigins = [
   'http://localhost:5173', // Vite default
   'http://localhost:3000', // Alternative development port
   'http://localhost:4173', // Vite preview
-  'https://jaibhavani.vercel.app/', // Vercel deployment
+  'https://jbca.vercel.app/', // Vercel deployment
 ].filter(Boolean); // Remove undefined values
 
 console.log('Allowed CORS origins:', allowedOrigins);
