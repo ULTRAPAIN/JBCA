@@ -10,6 +10,7 @@ import {
   Bars3Icon, 
   XMarkIcon, 
   ShoppingCartIcon,
+  ClipboardDocumentListIcon,
   UserIcon,
   ChevronDownIcon,
   HomeIcon,
@@ -163,6 +164,17 @@ const Navbar = () => {
               )}
             </Link>
 
+            {/* Orders Icon - Desktop Only */}
+            {isAuthenticated && (
+              <Link
+                to="/orders"
+                className="relative hidden md:flex items-center justify-center h-8 w-8 md:h-9 md:w-9 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-all duration-200 cursor-pointer"
+                title="My Orders"
+              >
+                <ClipboardDocumentListIcon className="h-5 w-5 md:h-5 md:w-5" />
+              </Link>
+            )}
+
             {/* Authentication - Desktop Dropdown */}
             {isAuthenticated ? (
               <Menu as="div" className="relative hidden md:block">
@@ -213,7 +225,7 @@ const Navbar = () => {
                               active ? 'bg-red-50 dark:bg-slate-700/70 text-red-600 dark:text-amber-400' : 'text-gray-900 dark:text-slate-100'
                             } group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 cursor-pointer`}
                           >
-                            <ShoppingCartIcon className="mr-3 h-5 w-5" />
+                            <ClipboardDocumentListIcon className="mr-3 h-5 w-5" />
                             My Orders
                           </Link>
                         )}
@@ -294,6 +306,17 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
+
+            {/* Orders Icon - Mobile */}
+            {isAuthenticated && (
+              <Link
+                to="/orders"
+                className="relative flex items-center justify-center h-8 w-8 mobile-md:h-9 mobile-md:w-9 text-gray-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-all duration-200 cursor-pointer"
+                title="My Orders"
+              >
+                <ClipboardDocumentListIcon className="h-4 w-4 mobile-md:h-5 mobile-md:w-5" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -316,6 +339,21 @@ const Navbar = () => {
               <span className="text-xs font-medium truncate">{link.name}</span>
             </Link>
           ))}
+          
+          {/* Orders in mobile bottom nav */}
+          {isAuthenticated && (
+            <Link
+              to="/orders"
+              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer min-w-0 flex-1 ${
+                isActiveLink('/orders')
+                  ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-slate-800/70'
+                  : 'text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50'
+              }`}
+            >
+              <ClipboardDocumentListIcon className="h-5 w-5 mobile-md:h-6 mobile-md:w-6" />
+              <span className="text-xs font-medium truncate">Orders</span>
+            </Link>
+          )}
           
           {/* Notifications in mobile bottom nav */}
           {isAuthenticated && (
