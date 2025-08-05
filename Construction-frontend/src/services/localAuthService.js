@@ -75,6 +75,36 @@ class LocalAuthService {
       setTimeout(() => {
         const users = JSON.parse(localStorage.getItem('jaibhavani_users') || '[]');
         
+        // Enhanced validation
+        // Name validation - no numbers allowed
+        if (/\d/.test(userData.name)) {
+          reject(new Error('Name cannot contain numbers'));
+          return;
+        }
+        
+        if (!/^[a-zA-Z\s]+$/.test(userData.name.trim())) {
+          reject(new Error('Name can only contain letters and spaces'));
+          return;
+        }
+        
+        // Phone validation - now required
+        if (!userData.phone || !userData.phone.trim()) {
+          reject(new Error('Phone number is required'));
+          return;
+        }
+        
+        if (!/^[0-9]{10}$/.test(userData.phone.replace(/\D/g, ''))) {
+          reject(new Error('Please enter a valid 10-digit phone number'));
+          return;
+        }
+        
+        // Password validation - must contain lowercase, uppercase, number, and special character
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,}$/;
+        if (!passwordRegex.test(userData.password)) {
+          reject(new Error('Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'));
+          return;
+        }
+        
         // Check if user already exists
         const existingUser = users.find(u => 
           u.email.toLowerCase() === userData.email.toLowerCase()
@@ -95,7 +125,7 @@ class LocalAuthService {
           isAdmin: false,
           phone: userData.phone || '',
           address: userData.address || '',
-          businessName: userData.businessName || '',
+          businessType: userData.businessType || '',
           city: userData.city || '',
           createdAt: new Date().toISOString()
         };
