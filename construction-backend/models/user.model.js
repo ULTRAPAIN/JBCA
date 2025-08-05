@@ -34,7 +34,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Name is required'],
     trim: true,
-    maxlength: [50, 'Name cannot exceed 50 characters']
+    maxlength: [50, 'Name cannot exceed 50 characters'],
+    validate: {
+      validator: function(name) {
+        // Name should only contain letters and spaces, no numbers
+        return /^[a-zA-Z\s]+$/.test(name);
+      },
+      message: 'Name can only contain letters and spaces, no numbers allowed'
+    }
   },
   email: {
     type: String,
@@ -46,7 +53,14 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters']
+    minlength: [6, 'Password must be at least 6 characters'],
+    validate: {
+      validator: function(password) {
+        // Password must contain at least one lowercase, uppercase, number, and special character
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,}$/.test(password);
+      },
+      message: 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+    }
   },
   role: {
     type: String,
@@ -66,6 +80,7 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
+    required: [true, 'Phone number is required'],
     match: [/^[6-9]\d{9}$/, 'Please enter a valid phone number']
   },
   isActive: {
