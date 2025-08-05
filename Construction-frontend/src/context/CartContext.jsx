@@ -99,37 +99,87 @@ export const CartProvider = ({ children }) => {
 
   // Track the current user ID for cart session management
   const [currentUserId, setCurrentUserId] = React.useState(null);
+  const [isInitialized, setIsInitialized] = React.useState(false);
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const cartData = JSON.parse(savedCart);
-        dispatch({ type: 'LOAD_CART', payload: cartData });
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-      }
+  // Generate user-specific cart key
+  const getCartKey = (userId) => {
+    return userId ? `cart_${userId}` : 'cart_guest';
+  };
+
+  // Clean up old cart data when switching users
+  const cleanupOldCart = (oldUserId) => {
+    if (oldUserId) {
+      const oldCartKey = getCartKey(oldUserId);
+      localStorage.removeItem(oldCartKey);
     }
-  }, []);
+    // Also clean up any generic 'cart' key from old implementation
+    localStorage.removeItem('cart');
+  };
 
-  // Clear cart when user logs out or a different user logs in
+  // Load cart from localStorage on mount and when user changes
   useEffect(() => {
-    if (!isAuthenticated) {
-      // User logged out - clear cart
+    if (isAuthenticated && user) {
+      const newUserId = user._id || user.id;
+      
+      // If switching users, clean up old cart
+      if (currentUserId && currentUserId !== newUserId) {
+        console.log('Switching users, cleaning up old cart');
+        cleanupOldCart(currentUserId);
+      }
+      
+      // User is authenticated - load their specific cart
+      const userCartKey = getCartKey(newUserId);
+      const savedCart = localStorage.getItem(userCartKey);
+      
+      console.log(`Loading cart for user ${newUserId}:`, savedCart ? 'Found saved cart' : 'No saved cart');
+      
+      if (savedCart) {
+        try {
+          const cartData = JSON.parse(savedCart);
+          if (cartData && cartData.items && Array.isArray(cartData.items)) {
+            dispatch({ type: 'LOAD_CART', payload: cartData });
+            console.log('Cart loaded successfully:', cartData.items.length, 'items');
+          } else {
+            console.log('Invalid cart data structure, clearing cart');
+            dispatch({ type: 'CLEAR_CART' });
+          }
+        } catch (error) {
+          console.error('Error loading user cart from localStorage:', error);
+          dispatch({ type: 'CLEAR_CART' });
+        }
+      } else {
+        // No saved cart for this user - start fresh
+        console.log('No saved cart found, starting fresh');
+        dispatch({ type: 'CLEAR_CART' });
+      }
+      
+      setCurrentUserId(newUserId);
+      setIsInitialized(true);
+    } else if (!isAuthenticated && isInitialized) {
+      // User logged out - clean up and clear cart
+      console.log('User logged out, clearing cart');
+      if (currentUserId) {
+        cleanupOldCart(currentUserId);
+      }
       dispatch({ type: 'CLEAR_CART' });
       setCurrentUserId(null);
-    } else if (user && user._id !== currentUserId) {
-      // Different user logged in - clear cart for new user
-      dispatch({ type: 'CLEAR_CART' });
-      setCurrentUserId(user._id);
     }
-  }, [isAuthenticated, user, currentUserId]);
+  }, [isAuthenticated, user]);
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to localStorage whenever it changes (user-specific)
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(state));
-  }, [state]);
+    if (isInitialized && isAuthenticated && currentUserId && state.items) {
+      const userCartKey = getCartKey(currentUserId);
+      const cartData = {
+        items: state.items,
+        total: state.total,
+        itemCount: state.itemCount,
+        lastUpdated: new Date().toISOString()
+      };
+      localStorage.setItem(userCartKey, JSON.stringify(cartData));
+      console.log(`Cart saved for user ${currentUserId}:`, state.items.length, 'items');
+    }
+  }, [state, currentUserId, isAuthenticated, isInitialized]);
 
   // Add item to cart
   const addToCart = (product, quantity = 1, price) => {
@@ -158,6 +208,12 @@ export const CartProvider = ({ children }) => {
   // Clear entire cart
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
+    
+    // Also clear from localStorage if user is authenticated
+    if (isAuthenticated && currentUserId) {
+      const userCartKey = getCartKey(currentUserId);
+      localStorage.removeItem(userCartKey);
+    }
   };
 
   // Get item quantity by product ID
