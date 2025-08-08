@@ -99,6 +99,19 @@ class OrderService {
     }
   }
 
+  // Cancel an order (user)
+  async cancelOrder(orderId) {
+    try {
+      console.log('OrderService: Cancelling order...', orderId);
+      const response = await ordersAPI.cancel(orderId);
+      console.log('OrderService: Order cancellation response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      throw error;
+    }
+  }
+
   // Delete order (admin only)
   async deleteOrder(orderId) {
     try {
