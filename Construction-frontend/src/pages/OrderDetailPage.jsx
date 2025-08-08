@@ -528,6 +528,7 @@ const OrderDetailPage = () => {
                   variant="outline" 
                   size="sm" 
                   className="w-full text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-xs sm:text-sm"
+                  onClick={() => navigate('/contact')}
                 >
                   <PhoneIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                   Contact Support
