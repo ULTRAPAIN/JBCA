@@ -15,7 +15,9 @@ import {
   CheckCircleIcon,
   MapPinIcon,
   GlobeAltIcon,
-  MapIcon
+  MapIcon,
+  XCircleIcon,
+  PhoneIcon
 } from '@heroicons/react/24/outline';
 
 const CheckoutPage = () => {
@@ -51,7 +53,10 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (selectedZone) {
       const zone = deliveryZones.find(z => z._id === selectedZone);
-      setDeliveryFee(zone ? (zone.deliveryCharge || zone.deliveryFee || 0) : 0);
+      console.log('setDeliveryFee debug - Zone found:', zone);
+      const feeValue = zone ? (zone.deliveryCharge || zone.deliveryFee || 0) : 0;
+      console.log('setDeliveryFee debug - Fee value:', feeValue, 'Is valid number:', Number.isFinite(feeValue));
+      setDeliveryFee(Number(feeValue) || 0);
     }
   }, [selectedZone, deliveryZones]);
 
@@ -293,32 +298,48 @@ const CheckoutPage = () => {
 
   const getEffectivePrice = (product) => {
     if (!product) {
+      console.warn('getEffectivePrice: Product is null or undefined');
       return 0;
     }
     
     // Check for different possible price field names and handle various pricing structures
     if (!user) {
-      return product.prices?.registered || product.price || 0;
+      const price = product.prices?.registered || product.price || 0;
+      console.log('getEffectivePrice: No user, returning price:', price, 'for product:', product.name);
+      return Number(price) || 0;
     }
     
     // Role-based pricing logic
+    let effectivePrice = 0;
     switch (user.role) {
       case 'admin':
-        return product.prices?.registered || product.price || 0;
+        effectivePrice = product.prices?.registered || product.price || 0;
+        break;
       case 'primary':
-        return product.prices?.primary || product.prices?.registered || product.price || 0;
+        effectivePrice = product.prices?.primary || product.prices?.registered || product.price || 0;
+        break;
       case 'secondary':
-        return product.prices?.secondary || product.prices?.registered || product.price || 0;
+        effectivePrice = product.prices?.secondary || product.prices?.registered || product.price || 0;
+        break;
       default:
-        return product.prices?.registered || product.price || 0;
+        effectivePrice = product.prices?.registered || product.price || 0;
+        break;
     }
+    
+    const finalPrice = Number(effectivePrice) || 0;
+    console.log('getEffectivePrice: User role:', user.role, 'Product:', product.name, 'Price:', finalPrice, 'Raw price data:', product.prices);
+    return finalPrice;
   };
 
   const getItemTotal = (item) => {
     if (!item || !item.product || typeof item.quantity !== 'number') {
+      console.warn('getItemTotal: Invalid item data:', item);
       return 0;
     }
-    return getEffectivePrice(item.product) * item.quantity;
+    const price = getEffectivePrice(item.product);
+    const total = price * item.quantity;
+    console.log('getItemTotal: Product:', item.product.name, 'Price:', price, 'Quantity:', item.quantity, 'Total:', total);
+    return Number(total) || 0;
   };
 
   const validateForm = () => {
@@ -353,13 +374,44 @@ const CheckoutPage = () => {
       const subtotal = calculateSubtotal();
       const total = subtotal + deliveryFee;
 
+      // Validate totals before proceeding
+      if (!subtotal || isNaN(subtotal) || subtotal <= 0) {
+        throw new Error('Invalid subtotal calculated. Please check your cart items.');
+      }
+      
+      if (!total || isNaN(total) || total <= 0) {
+        throw new Error('Invalid total amount calculated.');
+      }
+      
+      console.log('CheckoutPage: Calculated totals - Subtotal:', subtotal, 'Delivery Fee:', deliveryFee, 'Total:', total);
+
       // Prepare order data for the backend API
       const submitOrderData = {
-        items: cartItems.map(item => ({
-          product: item.product._id || item.product.id,
-          quantity: item.quantity,
-          priceAtPurchase: getEffectivePrice(item.product)
-        })),
+        items: cartItems
+          .filter(item => item && item.product && item.product._id)
+          .map(item => {
+            const priceAtPurchase = getEffectivePrice(item.product);
+            const itemTotal = getItemTotal(item);
+            
+            // Validate that we have valid numbers
+            if (!priceAtPurchase || isNaN(priceAtPurchase) || priceAtPurchase <= 0) {
+              console.error('Invalid priceAtPurchase for item:', item.product.name, priceAtPurchase);
+              throw new Error(`Invalid price for product: ${item.product.name}`);
+            }
+            
+            if (!itemTotal || isNaN(itemTotal) || itemTotal <= 0) {
+              console.error('Invalid itemTotal for item:', item.product.name, itemTotal);
+              throw new Error(`Invalid total for product: ${item.product.name}`);
+            }
+            
+            return {
+              product: item.product._id,
+              quantity: item.quantity,
+              priceAtPurchase: priceAtPurchase,
+              total: itemTotal,
+            };
+          }),
+        totalAmount: total,
         shippingAddress: {
           street: orderData.deliveryAddress,
           area: deliveryZones.find(z => z._id === selectedZone)?.area || '',
@@ -406,15 +458,31 @@ const CheckoutPage = () => {
 
   // Calculate totals with user-specific pricing
   const calculateSubtotal = () => {
-    return cartItems
-      .filter(item => item && item.product && item.product._id)
-      .reduce((total, item) => {
-        return total + getItemTotal(item);
-      }, 0);
+    const validItems = cartItems.filter(item => item && item.product && item.product._id);
+    console.log('calculateSubtotal: Valid cart items:', validItems.length);
+    
+    const subtotal = validItems.reduce((total, item) => {
+      const itemTotal = getItemTotal(item);
+      console.log('calculateSubtotal: Adding item total:', itemTotal, 'Running total:', total + itemTotal);
+      return total + itemTotal;
+    }, 0);
+    
+    console.log('calculateSubtotal: Final subtotal:', subtotal);
+    return Number(subtotal) || 0;
   };
 
   const subtotal = calculateSubtotal();
   const total = subtotal + deliveryFee;
+  
+  // Debug total calculation
+  console.log('Final total calculation debug:', {
+    subtotal,
+    deliveryFee,
+    total,
+    isSubtotalValid: Number.isFinite(subtotal),
+    isDeliveryFeeValid: Number.isFinite(deliveryFee),
+    isTotalValid: Number.isFinite(total)
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 py-4 sm:py-8 transition-colors duration-300">
@@ -641,6 +709,69 @@ const CheckoutPage = () => {
                     <p className="text-xs sm:text-sm text-blue-800 dark:text-slate-300 font-medium">
                       Secure and convenient - Pay when your order is delivered to your doorstep
                     </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cancellation Policy */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-lg dark:shadow-slate-900/20 border border-gray-100 dark:border-slate-700 p-4 sm:p-6 lg:p-8 backdrop-blur-sm transition-colors duration-300">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-slate-100 mb-6 sm:mb-8 flex items-center">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-500 to-red-500 dark:from-amber-400 dark:to-orange-500 rounded-lg sm:rounded-xl flex items-center justify-center mr-2 sm:mr-3">
+                    <XCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                  Cancellation Policy
+                </h2>
+
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-green-600 dark:text-green-400 text-xs font-bold">1</span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm sm:text-base mb-1">
+                        Free Cancellation - Processing Stage
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
+                        You can cancel your order free of charge while it's being processed (before admin confirmation).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-yellow-600 dark:text-yellow-400 text-xs font-bold">2</span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm sm:text-base mb-1">
+                        Limited Cancellation - After Confirmation
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
+                        Once confirmed by admin, cancellation is possible but may be subject to fees. Contact support for assistance.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-red-600 dark:text-red-400 text-xs font-bold">3</span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm sm:text-base mb-1">
+                        No Cancellation - Out for Delivery & Delivered
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
+                        Once your order is out for delivery or delivered, cancellation is not available. Please contact support for any issues.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-lg p-3 sm:p-4 border border-blue-200 dark:border-slate-600">
+                    <div className="flex items-center">
+                      <PhoneIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-amber-400 mr-2 sm:mr-3 flex-shrink-0" />
+                      <p className="text-xs sm:text-sm text-blue-800 dark:text-slate-300 font-medium">
+                        Need help? Contact our support team at any time for cancellation assistance.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
