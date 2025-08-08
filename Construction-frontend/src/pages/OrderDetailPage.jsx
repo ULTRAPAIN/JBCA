@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ordersAPI, adminAPI } from '../services/api';
+import orderService from '../services/orderService';
 import Loading from '../components/common/Loading';
 import Button from '../components/common/Button';
 import { 
@@ -12,7 +13,8 @@ import {
   PhoneIcon,
   MapPinIcon,
   CreditCardIcon,
-  CalendarIcon
+  CalendarIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 
 const OrderDetailPage = () => {
@@ -24,6 +26,8 @@ const OrderDetailPage = () => {
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [cancellingOrder, setCancellingOrder] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const isNewOrder = location.state?.newOrder;
   const isAdminRoute = location.pathname.includes('/admin/');
 
@@ -105,6 +109,45 @@ const OrderDetailPage = () => {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const canCancelOrder = (order) => {
+    // Orders can only be cancelled if they are in 'Processing' or 'Confirmed' status
+    return ['processing', 'confirmed'].includes(order.status.toLowerCase());
+  };
+
+  const handleCancelOrder = () => {
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelOrder = async () => {
+    if (!order) return;
+
+    setCancellingOrder(true);
+    try {
+      await orderService.cancelOrder(order._id);
+      
+      // Update the order in the local state
+      setOrder(prev => ({ ...prev, status: 'Cancelled' }));
+      
+      setShowCancelModal(false);
+      setSuccessMessage('Order cancelled successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    } catch (err) {
+      console.error('Error cancelling order:', err);
+      setError(`Failed to cancel order: ${err.response?.data?.message || err.message}`);
+      setShowCancelModal(false);
+    } finally {
+      setCancellingOrder(false);
+    }
+  };
+
+  const closeCancelModal = () => {
+    setShowCancelModal(false);
   };
 
   const getStatusIcon = (status) => {
@@ -309,6 +352,42 @@ const OrderDetailPage = () => {
               </div>
             </div>
           )}
+
+          {/* Customer Cancel Order Controls */}
+          {!isAdminRoute && order && canCancelOrder(order) && (
+            <div className="mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-slate-100 mb-1">Order Cancellation</h3>
+                  <p className="text-xs text-gray-600 dark:text-slate-400">
+                    {order.status.toLowerCase() === 'processing' 
+                      ? 'You can cancel this order free of charge as it hasn\'t been confirmed yet.'
+                      : order.status.toLowerCase() === 'confirmed'
+                      ? 'This order has been confirmed. Cancellation may be subject to fees.'
+                      : 'This order is being delivered. Emergency cancellation may incur charges.'}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleCancelOrder}
+                  disabled={cancellingOrder}
+                  variant="outline"
+                  className="border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-400 dark:hover:border-red-500 whitespace-nowrap"
+                >
+                  {cancellingOrder ? (
+                    <div className="flex items-center space-x-2">
+                      <Loading size="sm" />
+                      <span>Cancelling...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <XCircleIcon className="h-4 w-4" />
+                      <span>Cancel Order</span>
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Order Timeline */}
@@ -458,6 +537,69 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Cancellation Confirmation Modal */}
+      {showCancelModal && order && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+            <div className="p-6">
+              <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full">
+                <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
+              </div>
+              
+              <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 text-center mb-2">
+                Cancel Order
+              </h3>
+              
+              <p className="text-sm text-gray-600 dark:text-slate-400 text-center mb-6">
+                Are you sure you want to cancel order <span className="font-semibold text-gray-900 dark:text-slate-100">#{order.orderNumber}</span>?
+              </p>
+              
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 mb-6">
+                <div className="flex items-start space-x-2">
+                  <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-yellow-800 dark:text-yellow-200 font-medium">
+                      Cancellation Policy
+                    </p>
+                    <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                      {order.status.toLowerCase() === 'processing' 
+                        ? 'This order can be cancelled free of charge as it hasn\'t been confirmed yet.'
+                        : order.status.toLowerCase() === 'confirmed'
+                        ? 'This order has been confirmed. Cancellation may be subject to fees.'
+                        : 'This order is being delivered. Emergency cancellation may incur charges.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button
+                  onClick={closeCancelModal}
+                  variant="outline"
+                  className="flex-1 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                >
+                  Keep Order
+                </Button>
+                <Button
+                  onClick={confirmCancelOrder}
+                  disabled={cancellingOrder}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {cancellingOrder ? (
+                    <div className="flex items-center justify-center">
+                      <Loading size="sm" className="mr-2" />
+                      Cancelling...
+                    </div>
+                  ) : (
+                    'Cancel Order'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
