@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ordersAPI } from '../services/api';
+import orderService from '../services/orderService';
 import Loading from '../components/common/Loading';
 import Button from '../components/common/Button';
 import { 
@@ -10,7 +11,8 @@ import {
   TruckIcon,
   XCircleIcon,
   EyeIcon,
-  ShoppingBagIcon 
+  ShoppingBagIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 
 const OrdersPage = () => {
@@ -18,6 +20,9 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -41,6 +46,48 @@ const OrdersPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const canCancelOrder = (order) => {
+    // Orders can only be cancelled if they are in 'Processing' or 'Confirmed' status
+    return ['processing', 'confirmed'].includes(order.status.toLowerCase());
+  };
+
+  const handleCancelOrder = (order) => {
+    setOrderToCancel(order);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelOrder = async () => {
+    if (!orderToCancel) return;
+
+    setCancellingOrderId(orderToCancel._id);
+    try {
+      await orderService.cancelOrder(orderToCancel._id);
+      
+      // Update the order in the local state
+      setOrders(orders.map(order => 
+        order._id === orderToCancel._id 
+          ? { ...order, status: 'Cancelled' }
+          : order
+      ));
+      
+      setShowCancelModal(false);
+      setOrderToCancel(null);
+      
+      // Show success message
+      alert('Order cancelled successfully!');
+    } catch (err) {
+      console.error('Error cancelling order:', err);
+      alert('Failed to cancel order. Please try again.');
+    } finally {
+      setCancellingOrderId(null);
+    }
+  };
+
+  const closeCancelModal = () => {
+    setShowCancelModal(false);
+    setOrderToCancel(null);
   };
 
   const getStatusIcon = (status) => {
@@ -212,16 +259,40 @@ const OrdersPage = () => {
                         <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
                           ₹{order.totalAmount.toFixed(2)}
                         </p>
-                        <Link to={`/orders/${order._id}`}>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex items-center space-x-2 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-400 dark:hover:border-indigo-500 font-medium shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200"
-                          >
-                            <EyeIcon className="h-4 w-4" />
-                            <span>View Details</span>
-                          </Button>
-                        </Link>
+                        <div className="flex flex-col space-y-2">
+                          <Link to={`/orders/${order._id}`}>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center space-x-2 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-400 dark:hover:border-indigo-500 font-medium shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 w-full justify-center"
+                            >
+                              <EyeIcon className="h-4 w-4" />
+                              <span>View Details</span>
+                            </Button>
+                          </Link>
+                          
+                          {canCancelOrder(order) && (
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCancelOrder(order)}
+                              disabled={cancellingOrderId === order._id}
+                              className="flex items-center space-x-2 border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-400 dark:hover:border-red-500 font-medium shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            >
+                              {cancellingOrderId === order._id ? (
+                                <>
+                                  <Loading size="sm" />
+                                  <span>Cancelling...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <XCircleIcon className="h-4 w-4" />
+                                  <span>Cancel Order</span>
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -229,12 +300,53 @@ const OrdersPage = () => {
 
                 {/* Order Status Messages */}
                 {order.status.toLowerCase() === 'processing' && (
-                  <div className="mt-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <ClockIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
-                        Your order is being processed. We'll update you once it's confirmed.
-                      </p>
+                  <div className="mt-4 space-y-3">
+                    <div className="p-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <ClockIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                        <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
+                          Your order is being processed. We'll update you once it's confirmed.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                      <div className="flex items-start space-x-3">
+                        <ExclamationTriangleIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                            Cancellation Policy
+                          </p>
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            You can cancel this order until it's confirmed by our admin. Once confirmed, cancellation may not be possible.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {order.status.toLowerCase() === 'confirmed' && (
+                  <div className="mt-4 space-y-3">
+                    <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <CheckCircleIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                          Your order has been confirmed and is being prepared for delivery.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
+                      <div className="flex items-start space-x-3">
+                        <ExclamationTriangleIcon className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
+                            Limited Cancellation
+                          </p>
+                          <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                            This order has been confirmed. Cancellation is still possible but may be subject to fees. Contact support for assistance.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -244,7 +356,7 @@ const OrdersPage = () => {
                     <div className="flex items-center space-x-3">
                       <TruckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
-                        Your order is on the way! It should arrive soon.
+                        Your order is on the way! It should arrive soon. Cancellation is no longer available.
                       </p>
                     </div>
                   </div>
@@ -256,6 +368,17 @@ const OrdersPage = () => {
                       <CheckCircleIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
                       <p className="text-sm text-green-800 dark:text-green-200 font-medium">
                         Order delivered successfully! Thank you for your business.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {order.status.toLowerCase() === 'cancelled' && (
+                  <div className="mt-4 p-3 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-700 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <XCircleIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
+                      <p className="text-sm text-red-800 dark:text-red-200 font-medium">
+                        This order has been cancelled. If you have any questions, please contact our support team.
                       </p>
                     </div>
                   </div>
@@ -292,6 +415,69 @@ const OrdersPage = () => {
           </Link>
         </div>
       </div>
+
+      {/* Cancellation Confirmation Modal */}
+      {showCancelModal && orderToCancel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+            <div className="p-6">
+              <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full">
+                <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
+              </div>
+              
+              <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 text-center mb-2">
+                Cancel Order
+              </h3>
+              
+              <p className="text-sm text-gray-600 dark:text-slate-400 text-center mb-6">
+                Are you sure you want to cancel order <span className="font-semibold text-gray-900 dark:text-slate-100">#{orderToCancel.orderNumber}</span>?
+              </p>
+              
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 mb-6">
+                <div className="flex items-start space-x-2">
+                  <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-yellow-800 dark:text-yellow-200 font-medium">
+                      Cancellation Policy
+                    </p>
+                    <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                      {orderToCancel.status.toLowerCase() === 'processing' 
+                        ? 'This order can be cancelled free of charge as it hasn\'t been confirmed yet.'
+                        : orderToCancel.status.toLowerCase() === 'confirmed'
+                        ? 'This order has been confirmed. Cancellation may be subject to fees.'
+                        : 'This order is being delivered. Emergency cancellation may incur charges.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button
+                  onClick={closeCancelModal}
+                  variant="outline"
+                  className="flex-1 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                >
+                  Keep Order
+                </Button>
+                <Button
+                  onClick={confirmCancelOrder}
+                  disabled={cancellingOrderId === orderToCancel._id}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {cancellingOrderId === orderToCancel._id ? (
+                    <div className="flex items-center justify-center">
+                      <Loading size="sm" className="mr-2" />
+                      Cancelling...
+                    </div>
+                  ) : (
+                    'Cancel Order'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
