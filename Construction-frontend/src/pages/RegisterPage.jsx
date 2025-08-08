@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import Loading from '../components/common/Loading';
+import Toast from '../components/common/Toast';
 import { EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const RegisterPage = () => {
@@ -24,6 +25,8 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
+  const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
     hasLength: false,
@@ -133,6 +136,14 @@ const RegisterPage = () => {
     return errors;
   };
 
+  const showToast = (message, type = 'error') => {
+    setToast({ show: true, message, type });
+  };
+
+  const handleToastClose = () => {
+    setToast({ ...toast, show: false });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -154,6 +165,16 @@ const RegisterPage = () => {
     // Update password strength when password changes
     if (name === 'password') {
       setPasswordStrength(checkPasswordStrength(value));
+    }
+    
+    // Check password match for confirm password field
+    if (name === 'confirmPassword' && value && formData.password && value.length >= 3 && value !== formData.password) {
+      showToast('Passwords do not match!', 'error');
+    }
+    
+    // Show success toast when passwords match
+    if (name === 'confirmPassword' && value && formData.password && value === formData.password && value.length >= 3) {
+      showToast('Passwords match!', 'success');
     }
     
     // Clear errors when user starts typing
@@ -302,6 +323,8 @@ const RegisterPage = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                onFocus={() => setPasswordFocused(true)}
+                onBlur={() => setPasswordFocused(false)}
                 required
                 autoComplete="new-password"
                 placeholder="Create password (min. 6 chars)"
@@ -319,12 +342,19 @@ const RegisterPage = () => {
                 )}
               </button>
 
-              {/* Password Strength Indicator */}
+              {/* Password Hint */}
+              {!formData.password && (
+                <div className="mt-2 text-xs text-gray-500 dark:text-slate-400">
+                  Start typing to see password strength requirements
+                </div>
+              )}
+
+              {/* Password Strength Indicator - Shows only when user starts typing */}
               {formData.password && (
-                <div className="mt-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-gray-700 dark:text-slate-300">Password Strength</span>
-                    <span className={`text-xs font-semibold ${
+                <div className="mt-3 p-4 bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-300 dark:border-slate-600 shadow-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold text-gray-800 dark:text-slate-200">Password Strength</span>
+                    <span className={`text-sm font-bold ${
                       passwordStrength.strengthLevel === 'weak' ? 'text-red-500' :
                       passwordStrength.strengthLevel === 'fair' ? 'text-orange-500' :
                       passwordStrength.strengthLevel === 'good' ? 'text-yellow-500' :
@@ -336,68 +366,71 @@ const RegisterPage = () => {
                   </div>
                   
                   {/* Progress Bar */}
-                  <div className="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-2 mb-3">
+                  <div className="w-full bg-gray-300 dark:bg-slate-600 rounded-full h-3 mb-4 shadow-inner">
                     <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        passwordStrength.score === 0 ? 'w-0 bg-gray-300' :
+                      className={`h-3 rounded-full transition-all duration-500 ease-out ${
+                        passwordStrength.score === 0 ? 'w-0 bg-gray-400' :
                         passwordStrength.score === 1 ? 'w-1/5 bg-red-500' :
-                        passwordStrength.score === 2 ? 'w-2/5 bg-red-400' :
+                        passwordStrength.score === 2 ? 'w-2/5 bg-orange-400' :
                         passwordStrength.score === 3 ? 'w-3/5 bg-orange-500' :
                         passwordStrength.score === 4 ? 'w-4/5 bg-yellow-500' :
                         'w-full bg-green-500'
                       }`}
+                      style={{
+                        boxShadow: passwordStrength.score > 0 ? '0 2px 4px rgba(0,0,0,0.3)' : 'none'
+                      }}
                     ></div>
                   </div>
 
                   {/* Requirements Checklist */}
-                  <div className="space-y-1">
-                    <div className="flex items-center text-xs">
+                  <div className="space-y-2">
+                    <div className="flex items-center text-sm">
                       {passwordStrength.hasLength ? (
-                        <CheckIcon className="h-3 w-3 text-green-500 mr-2" />
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-3" />
                       ) : (
-                        <XMarkIcon className="h-3 w-3 text-red-500 mr-2" />
+                        <XMarkIcon className="h-4 w-4 text-red-500 mr-3" />
                       )}
-                      <span className={passwordStrength.hasLength ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                      <span className={passwordStrength.hasLength ? 'text-green-700 dark:text-green-400 font-medium' : 'text-red-600 dark:text-red-400'}>
                         At least 6 characters
                       </span>
                     </div>
-                    <div className="flex items-center text-xs">
+                    <div className="flex items-center text-sm">
                       {passwordStrength.hasLower ? (
-                        <CheckIcon className="h-3 w-3 text-green-500 mr-2" />
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-3" />
                       ) : (
-                        <XMarkIcon className="h-3 w-3 text-red-500 mr-2" />
+                        <XMarkIcon className="h-4 w-4 text-red-500 mr-3" />
                       )}
-                      <span className={passwordStrength.hasLower ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                      <span className={passwordStrength.hasLower ? 'text-green-700 dark:text-green-400 font-medium' : 'text-red-600 dark:text-red-400'}>
                         One lowercase letter
                       </span>
                     </div>
-                    <div className="flex items-center text-xs">
+                    <div className="flex items-center text-sm">
                       {passwordStrength.hasUpper ? (
-                        <CheckIcon className="h-3 w-3 text-green-500 mr-2" />
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-3" />
                       ) : (
-                        <XMarkIcon className="h-3 w-3 text-red-500 mr-2" />
+                        <XMarkIcon className="h-4 w-4 text-red-500 mr-3" />
                       )}
-                      <span className={passwordStrength.hasUpper ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                      <span className={passwordStrength.hasUpper ? 'text-green-700 dark:text-green-400 font-medium' : 'text-red-600 dark:text-red-400'}>
                         One uppercase letter
                       </span>
                     </div>
-                    <div className="flex items-center text-xs">
+                    <div className="flex items-center text-sm">
                       {passwordStrength.hasNumber ? (
-                        <CheckIcon className="h-3 w-3 text-green-500 mr-2" />
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-3" />
                       ) : (
-                        <XMarkIcon className="h-3 w-3 text-red-500 mr-2" />
+                        <XMarkIcon className="h-4 w-4 text-red-500 mr-3" />
                       )}
-                      <span className={passwordStrength.hasNumber ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                      <span className={passwordStrength.hasNumber ? 'text-green-700 dark:text-green-400 font-medium' : 'text-red-600 dark:text-red-400'}>
                         One number
                       </span>
                     </div>
-                    <div className="flex items-center text-xs">
+                    <div className="flex items-center text-sm">
                       {passwordStrength.hasSpecial ? (
-                        <CheckIcon className="h-3 w-3 text-green-500 mr-2" />
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-3" />
                       ) : (
-                        <XMarkIcon className="h-3 w-3 text-red-500 mr-2" />
+                        <XMarkIcon className="h-4 w-4 text-red-500 mr-3" />
                       )}
-                      <span className={passwordStrength.hasSpecial ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                      <span className={passwordStrength.hasSpecial ? 'text-green-700 dark:text-green-400 font-medium' : 'text-red-600 dark:text-red-400'}>
                         One special character (!@#$%^&*...)
                       </span>
                     </div>
@@ -429,6 +462,23 @@ const RegisterPage = () => {
                   <EyeIcon className="h-4 w-4 mobile-md:h-5 mobile-md:w-5 text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300" />
                 )}
               </button>
+              
+              {/* Password Match Indicator */}
+              {formData.confirmPassword && (
+                <div className="mt-2">
+                  {formData.password === formData.confirmPassword ? (
+                    <div className="flex items-center text-sm text-green-600 dark:text-green-400">
+                      <CheckIcon className="h-4 w-4 mr-2" />
+                      Passwords match
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-sm text-red-600 dark:text-red-400">
+                      <XMarkIcon className="h-4 w-4 mr-2" />
+                      Passwords do not match
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -478,6 +528,15 @@ const RegisterPage = () => {
           </p>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.show}
+        onClose={handleToastClose}
+        duration={3000}
+      />
     </div>
   );
 };
