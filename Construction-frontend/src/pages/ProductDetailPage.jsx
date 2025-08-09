@@ -161,12 +161,8 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-yellow-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center py-20">
-            <Loading size="lg" text="Loading product details..." />
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-yellow-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-300">
+        <Loading size="lg" variant="building" text="Loading product details..." showLogo={true} />
       </div>
     );
   }
