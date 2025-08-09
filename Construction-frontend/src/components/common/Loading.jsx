@@ -113,8 +113,27 @@ const Loading = ({
     <div className="flex items-center justify-center mb-4">
       <div className="relative">
         {/* Logo background with construction theme */}
-        <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl shadow-lg animate-pulse flex items-center justify-center">
-          <div className="text-white font-bold text-2xl">JB</div>
+        <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl shadow-lg animate-pulse flex items-center justify-center relative overflow-hidden">
+          {/* Construction elements background */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-2 left-2 w-3 h-3 bg-white rounded-full"></div>
+            <div className="absolute bottom-2 right-2 w-2 h-2 bg-white rounded-full"></div>
+            <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-white rounded-full"></div>
+          </div>
+          
+          {/* Main logo content */}
+          <div className="relative z-10 flex flex-col items-center justify-center text-white">
+            {/* Construction/Building skyline */}
+            <div className="flex items-end space-x-1 mb-2">
+              <div className="w-1.5 h-4 bg-white rounded-t animate-pulse"></div>
+              <div className="w-1.5 h-5 bg-white rounded-t animate-pulse delay-75"></div>
+              <div className="w-1.5 h-4 bg-white rounded-t animate-pulse delay-150"></div>
+            </div>
+            
+            {/* Company name */}
+            <div className="text-lg font-bold leading-none">JB</div>
+            <div className="text-xs leading-none opacity-90">CA</div>
+          </div>
         </div>
         
         {/* Construction particles around logo */}
@@ -122,9 +141,11 @@ const Loading = ({
         <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-orange-400 rounded-full animate-ping delay-150"></div>
         <div className="absolute top-1 -left-2 w-1 h-1 bg-red-400 rounded-full animate-ping delay-300"></div>
         
-        {/* Construction tools icons */}
+        {/* Construction crane on top */}
         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-          <div className="w-1 h-4 bg-gray-600 rounded animate-bounce delay-100"></div>
+          <div className="w-0.5 h-4 bg-gray-600 rounded animate-bounce delay-100"></div>
+          <div className="absolute top-0 -left-2 w-4 h-0.5 bg-gray-600 rounded animate-bounce delay-200"></div>
+          <div className="absolute top-1 right-0 w-0.5 h-0.5 bg-red-500 rounded-full animate-ping delay-300"></div>
         </div>
       </div>
     </div>
