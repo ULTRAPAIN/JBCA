@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import Loading from '../components/common/Loading';
-import { EyeIcon, EyeSlashIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
+import Logo from '../components/common/Logo';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const LoginPage = () => {
   const { login, isAuthenticated, loading: authLoading } = useAuth();
@@ -69,8 +70,8 @@ const LoginPage = () => {
       <div className="max-w-md w-full space-y-2 mobile-md:space-y-3 sm:space-y-6 mt-4 mobile-md:mt-0">
         {/* Header - Very compact on mobile */}
         <div className="text-center">
-          <div className="mx-auto h-10 w-10 mobile-md:h-12 mobile-md:w-12 sm:h-16 sm:w-16 bg-gradient-to-br from-yellow-400 to-red-500 dark:from-amber-400 dark:to-orange-500 rounded-full flex items-center justify-center mb-2 mobile-md:mb-3 sm:mb-4 shadow-lg dark:shadow-amber-400/30">
-            <BuildingStorefrontIcon className="h-5 w-5 mobile-md:h-6 mobile-md:w-6 sm:h-8 sm:w-8 text-white" />
+          <div className="flex justify-center mb-2 mobile-md:mb-3 sm:mb-4">
+            <Logo size="lg" variant="animated" />
           </div>
           <h2 className="text-lg mobile-md:text-xl sm:text-3xl font-bold text-gray-900 dark:text-slate-100 mb-1 mobile-md:mb-2">
             Welcome Back
