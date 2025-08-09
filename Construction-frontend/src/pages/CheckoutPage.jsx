@@ -890,7 +890,7 @@ const CheckoutPage = () => {
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
-                      <Loading size="sm" className="mr-2 sm:mr-3" />
+                      <Loading size="sm" variant="crane" className="mr-2 sm:mr-3" />
                       <span className="text-base sm:text-lg">Placing your order...</span>
                     </div>
                   ) : (
