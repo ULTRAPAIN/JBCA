@@ -228,7 +228,7 @@ const RegisterPage = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 transition-colors duration-300">
-        <Loading size="lg" text="Checking authentication..." />
+        <Loading size="lg" variant="building" text="Checking authentication..." showLogo={true} />
       </div>
     );
   }
@@ -509,7 +509,7 @@ const RegisterPage = () => {
             disabled={!isFormValid || loading}
           >
             {loading ? (
-              <Loading size="sm" text="Creating account..." />
+              <Loading size="sm" variant="mixer" text="Creating account..." />
             ) : (
               'Create Account'
             )}
