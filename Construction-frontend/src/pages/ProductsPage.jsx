@@ -228,7 +228,11 @@ const ProductsPage = () => {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+        <Loading size="lg" variant="building" text="Loading products..." showLogo={true} />
+      </div>
+    );
   }
 
   return (
