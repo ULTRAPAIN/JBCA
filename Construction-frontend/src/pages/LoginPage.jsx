@@ -59,7 +59,7 @@ const LoginPage = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 transition-colors duration-300">
-        <Loading size="lg" text="Checking authentication..." />
+        <Loading size="lg" variant="building" text="Checking authentication..." showLogo={true} />
       </div>
     );
   }
@@ -154,7 +154,7 @@ const LoginPage = () => {
             >
               {loading ? (
                 <div className="flex items-center justify-center text-white">
-                  <Loading size="sm" className="mr-2" />
+                  <Loading size="sm" variant="simple" className="mr-2" />
                   Signing in...
                 </div>
               ) : (
