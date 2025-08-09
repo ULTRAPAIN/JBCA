@@ -238,7 +238,7 @@ const RegisterPage = () => {
     <div className="min-h-screen flex items-start mobile-md:items-center justify-center bg-gray-50 dark:bg-slate-900 py-4 mobile-md:py-6 sm:py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-lg w-full space-y-2 mobile-md:space-y-3 sm:space-y-6 mt-4 mobile-md:mt-0">
         <div className="text-center">
-          <div className="mx-auto mb-4">
+          <div className="flex justify-center mb-4">
             <Logo size="lg" variant="animated" />
           </div>
           <h2 className="mt-1 mobile-md:mt-2 sm:mt-4 text-center text-lg mobile-md:text-xl sm:text-3xl font-extrabold text-gray-900 dark:text-slate-100">
