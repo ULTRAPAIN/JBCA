@@ -152,12 +152,8 @@ const NotificationsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-red-50 to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pt-16 md:pt-20 pb-20 md:pb-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-16">
-            <Loading size="lg" text="Loading notifications..." />
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-red-50 to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
+        <Loading size="lg" variant="simple" text="Loading notifications..." showLogo={true} />
       </div>
     );
   }
