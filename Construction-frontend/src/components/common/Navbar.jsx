@@ -6,6 +6,7 @@ import adminAuthService from '../../services/adminAuthService';
 import Button from './Button';
 import NotificationDropdown from './NotificationDropdown';
 import ThemeToggle from './ThemeToggle';
+import Logo from './Logo';
 import { 
   Bars3Icon, 
   XMarkIcon, 
@@ -17,7 +18,6 @@ import {
   CubeIcon,
   PhoneIcon,
   Cog6ToothIcon,
-  BuildingStorefrontIcon,
   BellIcon
 } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
@@ -94,9 +94,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-10 mobile-md:h-12 sm:h-14 md:h-15 lg:h-16 xl:h-16">
           {/* Logo with Brand Name */}
           <Link to="/" className="flex items-center space-x-2 mobile-md:space-x-3 group cursor-pointer">
-            <div className="bg-gradient-to-br from-yellow-400 to-red-500 p-1 mobile-md:p-1.5 sm:p-2 md:p-2 lg:p-2 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-200 shadow-lg">
-              <BuildingStorefrontIcon className="h-6 w-6 mobile-md:h-7 mobile-md:w-7 sm:h-8 sm:w-8 md:h-8 md:w-8 lg:h-8 lg:w-8 xl:h-9 xl:w-9 text-white drop-shadow-sm" />
-            </div>
+            <Logo size={isScrolled ? 'sm' : 'md'} variant="default" />
             <div className="flex flex-col">
               {/* Brand name - show full name prominently */}
               <span className={`font-bold transition-all duration-300 bg-gradient-to-r from-yellow-600 to-red-600 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent leading-tight ${
