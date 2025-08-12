@@ -21,6 +21,16 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Enhanced smooth scrolling for all scrollable elements */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Smooth scrolling for all containers */
+div, main, section, article, aside, nav, header, footer {
+  scroll-behavior: smooth;
+}
+
 /* Test dark mode - this should be visible */
 .dark body {
   background-color: rgb(17 24 39) !important; /* gray-900 */
@@ -99,10 +109,29 @@ body {
 /* Smooth scroll behavior for horizontal containers */
 .snap-x {
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
 }
 
 .snap-start {
   scroll-snap-align: start;
+}
+
+/* Enhanced smooth scrolling for all scroll containers */
+.overflow-x-auto,
+.overflow-y-auto,
+.overflow-auto {
+  scroll-behavior: smooth;
+}
+
+/* Smooth scrolling for specific classes */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Custom smooth scroll with easing */
+.smooth-scroll-ease {
+  scroll-behavior: smooth;
+  transition: scroll-behavior 0.3s ease;
 }
 
 /* Hide scrollbar completely for horizontal product sections */
