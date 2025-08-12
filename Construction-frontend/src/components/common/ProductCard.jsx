@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useResponsive } from '../../hooks/useResponsive';
@@ -11,6 +11,7 @@ const ProductCard = ({ product }) => {
   const { isAuthenticated, getUserPriceTier, user, isAdmin } = useAuth();
   const { addToCart, updateQuantity, getItemQuantity } = useCart();
   const { isMobile, isTablet, getTextSize } = useResponsive();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,6 +22,7 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/products/${productId}` } } });
       return;
     }
 
@@ -278,7 +280,7 @@ const ProductCard = ({ product }) => {
                   <Button
                     onClick={handleAddToCart}
                     loading={isLoading}
-                    disabled={!isAuthenticated}
+                    disabled={false}
                     className="bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-amber-400 dark:to-orange-400 hover:from-yellow-500 hover:to-orange-600 dark:hover:from-amber-500 dark:hover:to-orange-500 text-white font-bold py-2 px-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs flex items-center justify-center h-9 transform hover:scale-[1.02]"
                   >
                     <ShoppingCartIcon className="h-3 w-3 mr-1" />
@@ -306,11 +308,13 @@ const ProductCard = ({ product }) => {
 
         {/* Ultra Compact Login Prompt */}
         {!isAuthenticated && (
-          <div className="mt-1.5 p-1.5 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-600/50 rounded-md">
-            <p className="text-blue-700 dark:text-blue-400 text-xs font-medium text-center">
-              🔐 Login for pricing
-            </p>
-          </div>
+          <Link to="/login" className="block mt-1.5">
+            <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-600/50 rounded-md hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors duration-200 cursor-pointer">
+              <p className="text-blue-700 dark:text-blue-400 text-xs font-medium text-center">
+                🔐 Login to buy this product
+              </p>
+            </div>
+          </Link>
         )}
       </div>
     </div>

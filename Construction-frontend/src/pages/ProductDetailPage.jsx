@@ -332,9 +332,11 @@ const ProductDetailPage = () => {
               )}
 
               {!isAuthenticated && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600 rounded-lg p-4">
-                  <p className="text-blue-800 dark:text-blue-200 font-medium">🔐 Login to see personalized pricing and place orders</p>
-                </div>
+                <Link to="/login">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600 rounded-lg p-4 hover:bg-blue-100 dark:hover:bg-blue-800/30 transition-colors duration-200 cursor-pointer">
+                    <p className="text-blue-800 dark:text-blue-200 font-medium">🔐 Login to see personalized pricing and place orders</p>
+                  </div>
+                </Link>
               )}
             </div>
 
@@ -458,7 +460,7 @@ const ProductDetailPage = () => {
                       <Button 
                         onClick={handleAddToCart}
                         loading={isAddingToCart}
-                        disabled={!isAuthenticated}
+                        disabled={false}
                         className="flex-1 bg-gradient-to-r from-yellow-400 to-red-500 dark:from-amber-500 dark:to-orange-500 hover:from-yellow-500 hover:to-red-600 dark:hover:from-amber-600 dark:hover:to-orange-600 text-white font-bold py-3 xs:py-3 px-4 xs:px-6 text-base xs:text-lg shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation flex items-center justify-center"
                       >
                         <ShoppingCartIcon className="h-4 w-4 xs:h-5 xs:w-5 mr-2" />

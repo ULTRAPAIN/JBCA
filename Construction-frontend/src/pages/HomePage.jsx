@@ -20,6 +20,14 @@ import {
   ShoppingCartIcon
 } from '@heroicons/react/24/outline';
 
+// Import brand logos
+import ultraTechLogo from '../assets/ultra tech .jpeg';
+import ambujaLogo from '../assets/ambuja.jpeg';
+import accLogo from '../assets/acc.jpeg';
+import birlaLogo from '../assets/adity birla.jpeg';
+import drFixitLogo from '../assets/dr fixit.jpeg';
+import jkLogo from '../assets/jk cement.jpeg';
+
 const HomePage = () => {
   const { isAuthenticated, user } = useAuth();
   const { getGridCols, getContainerMaxWidth, isMobile, isTablet, isTV } = useResponsive();
@@ -150,7 +158,12 @@ const HomePage = () => {
   ];
 
   const trustedBrands = [
-    'UltraTech', 'Ambuja', 'ACC','Birla', 'DR.FIXIT','JK',
+    { name: 'UltraTech', logo: ultraTechLogo },
+    { name: 'Ambuja', logo: ambujaLogo },
+    { name: 'ACC', logo: accLogo },
+    { name: 'Birla', logo: birlaLogo },
+    { name: 'DR.FIXIT', logo: drFixitLogo },
+    { name: 'JK', logo: jkLogo },
   ];
 
   const contactInfo = [
@@ -283,18 +296,30 @@ const HomePage = () => {
               {trustedBrands.map((brand, index) => (
                 <div 
                   key={index} 
-                  className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-4 lg:p-3 xl:p-4 text-center hover:border-amber-400 dark:hover:border-amber-400 hover:shadow-lg dark:hover:shadow-amber-400/20 transition-all duration-300 transform hover:scale-105 animate-fade-in-up cursor-pointer relative overflow-hidden min-h-[80px] md:min-h-[90px] lg:min-h-[85px] xl:min-h-[95px] flex flex-col justify-center"
+                  className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-4 lg:p-3 xl:p-4 text-center hover:border-amber-400 dark:hover:border-amber-400 hover:shadow-lg dark:hover:shadow-amber-400/20 transition-all duration-300 transform hover:scale-105 animate-fade-in-up cursor-pointer relative overflow-hidden min-h-[100px] md:min-h-[120px] lg:min-h-[110px] xl:min-h-[130px] flex flex-col justify-center"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {/* Enhanced gradient background on hover with better contrast */}
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-700 dark:to-slate-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
                   {/* Content */}
-                  <div className="relative z-10">
-                    <div className="text-sm sm:text-base md:text-lg lg:text-base xl:text-lg font-bold text-gray-800 dark:text-slate-200 mb-1 sm:mb-2 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors duration-300">
-                      {brand}
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                    {/* Brand Logo */}
+                    <div className="mb-2 sm:mb-3 flex items-center justify-center h-12 sm:h-14 md:h-16 lg:h-14 xl:h-16">
+                      <img 
+                        src={brand.logo} 
+                        alt={`${brand.name} Logo`}
+                        className="max-h-full max-w-full object-contain filter brightness-90 group-hover:brightness-100 transition-all duration-300 group-hover:scale-110"
+                      />
                     </div>
-                    <div className="text-xs md:text-xs lg:text-xs xl:text-sm text-gray-500 dark:text-slate-400 group-hover:text-amber-700 dark:group-hover:text-amber-200 transition-colors duration-300 font-semibold">
+                    
+                    {/* Brand Name */}
+                    <div className="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-bold text-gray-800 dark:text-slate-200 mb-1 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors duration-300">
+                      {brand.name}
+                    </div>
+                    
+                    {/* Authorized Dealer Text */}
+                    <div className="text-xs md:text-xs lg:text-xs xl:text-sm text-gray-500 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-200 transition-colors duration-300 font-medium">
                       Authorized Dealer
                     </div>
                     

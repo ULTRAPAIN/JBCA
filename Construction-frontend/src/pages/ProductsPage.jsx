@@ -10,7 +10,11 @@ import {
   ChevronRightIcon,
   EyeIcon,
   Squares2X2Icon,
-  ListBulletIcon
+  ListBulletIcon,
+  FunnelIcon,
+  XMarkIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from '@heroicons/react/24/outline';
 
 const ProductsPage = () => {
@@ -22,6 +26,7 @@ const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [viewMode, setViewMode] = useState('category'); // 'category' or 'all'
   const [expandedCategories, setExpandedCategories] = useState(new Set());
+  const [sidebarOpen, setSidebarOpen] = useState(false); // For mobile sidebar toggle
 
   const categories = [
     { key: 'Cement', name: 'Cement', icon: '🏗️' },
