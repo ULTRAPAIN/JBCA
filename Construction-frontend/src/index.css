@@ -31,6 +31,19 @@ div, main, section, article, aside, nav, header, footer {
   scroll-behavior: smooth;
 }
 
+/* Better scroll performance */
+html, body {
+  scroll-behavior: smooth !important;
+}
+
+/* Improve scrolling performance on mobile */
+@supports (-webkit-touch-callout: none) {
+  html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
 /* Test dark mode - this should be visible */
 .dark body {
   background-color: rgb(17 24 39) !important; /* gray-900 */
