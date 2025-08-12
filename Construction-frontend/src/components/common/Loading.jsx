@@ -1,4 +1,5 @@
 import React from 'react';
+import logoImage from '../../assets/logo.png';
 
 const Loading = ({ 
   size = 'md', 
@@ -113,27 +114,23 @@ const Loading = ({
     <div className="flex items-center justify-center mb-4">
       <div className="relative">
         {/* Logo background with construction theme */}
-        <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl shadow-lg animate-pulse flex items-center justify-center relative overflow-hidden">
-          {/* Construction elements background */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-2 left-2 w-3 h-3 bg-white rounded-full"></div>
-            <div className="absolute bottom-2 right-2 w-2 h-2 bg-white rounded-full"></div>
-            <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-white rounded-full"></div>
-          </div>
+        <div className="w-16 h-16 bg-gradient-to-br from-orange-50 via-white to-yellow-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 rounded-2xl shadow-xl animate-pulse flex items-center justify-center relative overflow-hidden border-2 border-orange-500/30">
           
-          {/* Main logo content */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-white">
-            {/* Construction/Building skyline */}
-            <div className="flex items-end space-x-1 mb-2">
-              <div className="w-1.5 h-4 bg-white rounded-t animate-pulse"></div>
-              <div className="w-1.5 h-5 bg-white rounded-t animate-pulse delay-75"></div>
-              <div className="w-1.5 h-4 bg-white rounded-t animate-pulse delay-150"></div>
-            </div>
-            
-            {/* Company name */}
-            <div className="text-lg font-bold leading-none">JB</div>
-            <div className="text-xs leading-none opacity-90">CA</div>
-          </div>
+          {/* Your actual logo image */}
+          <img 
+            src={logoImage} 
+            alt="Jai Bhavani Cement Agency" 
+            className="w-12 h-12 object-contain relative z-10 transition-transform duration-300"
+            style={{ 
+              filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.1))' 
+            }}
+          />
+          
+          {/* Construction-themed decorative elements */}
+          <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-orange-400 rounded-full opacity-60 animate-pulse delay-100"></div>
+          <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-yellow-500 rounded-full opacity-60 animate-pulse delay-200"></div>
+          <div className="absolute top-1 right-1 w-1 h-1 bg-orange-300 rounded-full opacity-50 animate-pulse delay-300"></div>
+          <div className="absolute bottom-1 left-1 w-1 h-1 bg-yellow-400 rounded-full opacity-50 animate-pulse delay-400"></div>
         </div>
         
         {/* Construction particles around logo */}
@@ -143,8 +140,8 @@ const Loading = ({
         
         {/* Construction crane on top */}
         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-          <div className="w-0.5 h-4 bg-gray-600 rounded animate-bounce delay-100"></div>
-          <div className="absolute top-0 -left-2 w-4 h-0.5 bg-gray-600 rounded animate-bounce delay-200"></div>
+          <div className="w-0.5 h-4 bg-orange-500 rounded animate-bounce delay-100"></div>
+          <div className="absolute top-0 -left-2 w-4 h-0.5 bg-orange-500 rounded animate-bounce delay-200"></div>
           <div className="absolute top-1 right-0 w-0.5 h-0.5 bg-red-500 rounded-full animate-ping delay-300"></div>
         </div>
       </div>
