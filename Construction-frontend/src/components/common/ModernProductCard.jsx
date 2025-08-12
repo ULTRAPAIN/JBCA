@@ -46,6 +46,41 @@ const ModernProductCard = ({ product }) => {
     navigate(`/products/${product._id}`);
   };
 
+  const handleShare = async (e) => {
+    e.stopPropagation(); // Prevent card click
+    const productUrl = `${window.location.origin}/products/${product._id}`;
+    const shareData = {
+      title: product.name,
+      text: `Check out this ${product.name} from Jai Bhavani Cement Agency`,
+      url: productUrl
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(productUrl);
+          // You might want to show a toast notification here
+          alert('Product link copied to clipboard!');
+        } else {
+          // Final fallback
+          prompt('Copy this product link:', productUrl);
+        }
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(productUrl);
+        alert('Product link copied to clipboard!');
+      } catch (clipboardError) {
+        prompt('Copy this product link:', productUrl);
+      }
+    }
+  };
+
   // Get specifications for display (first 3)
   const specs = product.specifications ? Object.entries(product.specifications).slice(0, 3) : [];
 
@@ -91,123 +126,124 @@ const ModernProductCard = ({ product }) => {
 
   return (
     <div 
-      className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 cursor-pointer overflow-hidden border border-gray-100 h-80 sm:h-96 lg:h-[28rem] xl:h-96 flex flex-col"
+      className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-lg dark:shadow-slate-900/50 transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 dark:border-slate-700 flex flex-col h-[400px] sm:h-[420px] md:h-[440px]"
       onClick={handleCardClick}
     >
       {/* Product Type Badge */}
-      <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-20">
-        <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-lg flex items-center space-x-1">
-          <span className="text-xs sm:text-sm">{getCategoryIcon(category)}</span>
-          <span className="capitalize text-xs sm:text-sm hidden sm:inline">{category}</span>
+      <div className="absolute top-3 left-3 z-20">
+        <div className="bg-gradient-to-r from-orange-500 to-red-600 dark:from-orange-400 dark:to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-sm flex items-center space-x-1">
+          <span className="text-xs">{getCategoryIcon(category)}</span>
+          <span className="capitalize text-xs">{category}</span>
         </div>
       </div>
 
-      {/* Product Image - Responsive Height */}
-      <div className="relative h-48 sm:h-56 lg:h-64 xl:h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden flex-shrink-0">
+      {/* Product Image */}
+      <div className="relative h-40 sm:h-44 md:h-48 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-600 overflow-hidden flex-shrink-0">
         {product.images && product.images.length > 0 ? (
           <img
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 bg-white"
+            className="w-full h-full object-contain transition-transform duration-300 bg-white dark:bg-slate-100 p-2"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-700 dark:to-slate-600">
             <div className="text-center">
               <div className="text-6xl mb-2">🏗️</div>
-              <span className="text-gray-500 text-sm">Product Image</span>
+              <span className="text-gray-500 dark:text-slate-400 text-sm">Product Image</span>
             </div>
           </div>
         )}
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
       </div>
 
-      {/* Product Title Only - Simplified */}
-      <div className="p-3 sm:p-4 flex-grow flex flex-col justify-center">
-        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 text-center line-clamp-2 px-1">
-          {product.name}
-        </h3>
-      </div>
+      {/* Product Info and Actions Section */}
+      <div className="flex-1 flex flex-col">
+        {/* Product Name */}
+        <div className="p-3 pb-2 h-14 flex items-center">
+          <h3 className="text-base font-bold text-gray-900 dark:text-slate-100 line-clamp-2 leading-tight">
+            {product.name}
+          </h3>
+        </div>
 
-      {/* Hover Information Panel - Responsive Height and Positioning */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-red-900 via-red-800 to-orange-700 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out p-3 sm:p-4 h-64 sm:h-72 lg:h-80 xl:h-72">
-        {/* Product Name in Hover */}
-        <h4 className="text-base sm:text-lg font-bold mb-2 text-center line-clamp-1">{product.name}</h4>
-        
-        {/* Description in Hover */}
-        <p className="text-red-100 text-xs sm:text-sm mb-2 sm:mb-3 text-center line-clamp-2">
-          {product.description}
-        </p>
+        {/* Price Display */}
+        {isAuthenticated && displayPrice > 0 && (
+          <div className="px-3 pb-2 h-14 flex items-center">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-lg p-2 border border-red-200 dark:border-red-600/30 w-full">
+              <div className="flex items-center justify-between">
+                <span className="text-red-600 dark:text-red-400 font-bold text-lg">
+                  {formatPrice(displayPrice)}
+                </span>
+                {/* Discount indicator if applicable */}
+                {userRole === 'primary' || userRole === 'secondary' ? (
+                  <span className="text-green-600 dark:text-green-400 text-xs font-medium bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                    Special Price
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        )}
 
-        {/* Product Properties/Specifications Grid - Enhanced */}
-        {specs.length > 0 ? (
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3 sm:mb-4">
-            {specs.slice(0, 3).map(([key, value], index) => (
-              <div key={key} className="text-center">
-                <div className="bg-white/25 backdrop-blur-sm rounded-lg p-1 sm:p-2 hover:bg-white/30 transition-all duration-200 min-h-[60px] sm:min-h-[80px] flex flex-col justify-center">
-                  {/* Icon based on specification type */}
-                  <div className="text-sm sm:text-xl mb-0.5 sm:mb-1">
-                    {key.toLowerCase().includes('strength') ? '💪' : 
-                     key.toLowerCase().includes('density') ? '📦' : 
-                     key.toLowerCase().includes('leak') || key.toLowerCase().includes('proof') ? '🛡️' : 
-                     key.toLowerCase().includes('grade') ? '⭐' : 
-                     key.toLowerCase().includes('size') || key.toLowerCase().includes('diameter') ? '📏' : 
-                     key.toLowerCase().includes('length') ? '📏' : 
-                     key.toLowerCase().includes('weight') || key.toLowerCase().includes('pack') ? '⚖️' : 
-                     key.toLowerCase().includes('type') ? '🏷️' : '⚡'}
+        {/* Key Specifications */}
+        <div className="px-3 pb-3 h-20 flex items-center">
+          {specs.length > 0 ? (
+            <div className="grid grid-cols-2 gap-2 w-full">
+              {specs.slice(0, 2).map(([key, value], index) => (
+                <div key={key} className="bg-gray-50 dark:bg-slate-700 rounded-lg p-2 border border-gray-200 dark:border-slate-600">
+                  <div className="text-xs text-gray-500 dark:text-slate-400 uppercase font-medium tracking-wide mb-1">
+                    {key.length > 8 ? key.substring(0, 8) + '...' : key}
                   </div>
-                  <div className="text-xs font-semibold text-red-100 mb-0.5 sm:mb-1 line-clamp-1">
-                    {key}
-                  </div>
-                  <div className="text-xs text-white font-bold line-clamp-1">
+                  <div className="text-xs font-bold text-gray-900 dark:text-slate-100 line-clamp-1">
                     {value}
                   </div>
                 </div>
+              ))}
+            </div>
+          ) : (
+            /* Fallback info when no specs */
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-2 border border-gray-200 dark:border-slate-600">
+                <div className="text-xs text-gray-500 dark:text-slate-400 uppercase font-medium tracking-wide mb-1">
+                  CATEGORY
+                </div>
+                <div className="text-xs font-bold text-gray-900 dark:text-slate-100 capitalize">
+                  {category}
+                </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          /* Fallback when no specifications available */
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3 sm:mb-4">
-            <div className="text-center">
-              <div className="bg-white/25 backdrop-blur-sm rounded-lg p-1 sm:p-2 min-h-[60px] sm:min-h-[80px] flex flex-col justify-center">
-                <div className="text-sm sm:text-xl mb-0.5 sm:mb-1">{getCategoryIcon(category)}</div>
-                <div className="text-xs font-semibold text-red-100 mb-0.5 sm:mb-1">Category</div>
-                <div className="text-xs text-white font-bold capitalize">{category}</div>
+              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-2 border border-gray-200 dark:border-slate-600">
+                <div className="text-xs text-gray-500 dark:text-slate-400 uppercase font-medium tracking-wide mb-1">
+                  UNIT
+                </div>
+                <div className="text-xs font-bold text-gray-900 dark:text-slate-100">
+                  {product.unit || 'Piece'}
+                </div>
               </div>
             </div>
-            <div className="text-center">
-              <div className="bg-white/25 backdrop-blur-sm rounded-lg p-1 sm:p-2 min-h-[60px] sm:min-h-[80px] flex flex-col justify-center">
-                <div className="text-sm sm:text-xl mb-0.5 sm:mb-1">📦</div>
-                <div className="text-xs font-semibold text-red-100 mb-0.5 sm:mb-1">Unit</div>
-                <div className="text-xs text-white font-bold">{product.unit || 'Piece'}</div>
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="bg-white/25 backdrop-blur-sm rounded-lg p-1 sm:p-2 min-h-[60px] sm:min-h-[80px] flex flex-col justify-center">
-                <div className="text-sm sm:text-xl mb-0.5 sm:mb-1">✨</div>
-                <div className="text-xs font-semibold text-red-100 mb-0.5 sm:mb-1">Quality</div>
-                <div className="text-xs text-white font-bold">Premium</div>
-              </div>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Additional Properties indicator */}
-        {specs.length > 3 && (
-          <div className="text-center mb-2 sm:mb-3">
-            <span className="text-xs text-red-200 bg-white/20 px-2 py-1 rounded-full">
-              +{specs.length - 3} more properties
-            </span>
+        {/* Action Buttons */}
+        <div className="mt-auto p-3 pt-2 pb-4">
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleCardClick}
+              className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 dark:from-red-500 dark:to-orange-500 hover:from-red-700 hover:to-orange-700 text-white font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm flex items-center justify-center space-x-2"
+            >
+              <span>View Details</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            {/* Share button */}
+            <button 
+              onClick={handleShare}
+              className="p-3 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <svg className="w-4 h-4 text-gray-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+              </svg>
+            </button>
           </div>
-        )}
-
-        {/* View Detail Button - Always visible at bottom */}
-        <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4">
-          <button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-xs sm:text-sm">
-            View Detail
-          </button>
         </div>
       </div>
     </div>
