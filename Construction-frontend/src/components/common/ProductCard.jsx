@@ -217,105 +217,116 @@ const ProductCard = ({ product }) => {
 
         {/* Compact Action Section */}
         <div className="mt-auto">
-          {(isAdmin() ? product.stock > 0 : true) ? (
-            currentQuantity > 0 ? (
-              // Already in cart - Compact version
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between p-2 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-600/50 rounded-lg shadow-sm">
-                  <span className="text-xs font-semibold text-green-800 dark:text-green-300">In Cart: {currentQuantity}</span>
-                  <div className="flex items-center space-x-1.5">
-                    <button
-                      onClick={() => handleQuantityChange(currentQuantity - 1)}
-                      className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
-                    >
-                      <MinusIcon className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={() => handleQuantityChange(currentQuantity + 1)}
-                      className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
-                    >
-                      <PlusIcon className="h-3 w-3" />
-                    </button>
+          {isAuthenticated ? (
+            // User is authenticated - Show full functionality
+            (isAdmin() ? product.stock > 0 : true) ? (
+              currentQuantity > 0 ? (
+                // Already in cart - Compact version
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between p-2 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-600/50 rounded-lg shadow-sm">
+                    <span className="text-xs font-semibold text-green-800 dark:text-green-300">In Cart: {currentQuantity}</span>
+                    <div className="flex items-center space-x-1.5">
+                      <button
+                        onClick={() => handleQuantityChange(currentQuantity - 1)}
+                        className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
+                      >
+                        <MinusIcon className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => handleQuantityChange(currentQuantity + 1)}
+                        className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
+                      >
+                        <PlusIcon className="h-3 w-3" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <Link to={`/products/${productId}`} className="block">
-                  <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 hover:from-indigo-600 hover:to-purple-700 dark:hover:from-indigo-500 dark:hover:to-purple-600 text-white font-bold py-2 px-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs h-9 flex items-center justify-center transform hover:scale-[1.02]">
-                    <EyeIcon className="h-3 w-3 mr-1.5" />
-                    View Details
-                  </button>
-                </Link>
-              </div>
-            ) : (
-              // Not in cart - Simplified version
-              <div className="space-y-1.5">
-                {/* Ultra Compact Quantity Selector */}
-                <div className="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-700 dark:to-slate-600 rounded-lg border border-gray-200 dark:border-slate-500 shadow-sm">
-                  <span className="text-xs font-medium text-gray-700 dark:text-slate-300">Qty:</span>
-                  <div className="flex items-center space-x-1.5">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
-                    >
-                      <MinusIcon className="h-3 w-3" />
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
-                      max={isAdmin() ? product.stock : 999}
-                      value={quantity}
-                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-10 px-1 py-0.5 text-center border border-gray-300 dark:border-slate-400 bg-white dark:bg-slate-600 text-gray-900 dark:text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-orange-400 dark:focus:ring-amber-400 focus:border-orange-400 dark:focus:border-amber-400 font-semibold shadow-sm"
-                    />
-                    <button
-                      onClick={() => setQuantity(isAdmin() ? Math.min(product.stock, quantity + 1) : quantity + 1)}
-                      className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
-                    >
-                      <PlusIcon className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Ultra Compact Action Buttons */}
-                <div className="grid grid-cols-2 gap-1.5">
-                  <Button
-                    onClick={handleAddToCart}
-                    loading={isLoading}
-                    disabled={false}
-                    className="bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-amber-400 dark:to-orange-400 hover:from-yellow-500 hover:to-orange-600 dark:hover:from-amber-500 dark:hover:to-orange-500 text-white font-bold py-2 px-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs flex items-center justify-center h-9 transform hover:scale-[1.02]"
-                  >
-                    <ShoppingCartIcon className="h-3 w-3 mr-1" />
-                    {isAuthenticated ? 'Add' : 'Login'}
-                  </Button>
-                  
                   <Link to={`/products/${productId}`} className="block">
-                    <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 hover:from-indigo-600 hover:to-purple-700 dark:hover:from-indigo-500 dark:hover:to-purple-600 text-white font-bold py-2 px-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs flex items-center justify-center h-9 transform hover:scale-[1.02]">
-                      <EyeIcon className="h-3 w-3 mr-1" />
-                      Details
+                    <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 hover:from-indigo-600 hover:to-purple-700 dark:hover:from-indigo-500 dark:hover:to-purple-600 text-white font-bold py-2 px-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs h-9 flex items-center justify-center transform hover:scale-[1.02]">
+                      <EyeIcon className="h-3 w-3 mr-1.5" />
+                      View Details
                     </button>
                   </Link>
                 </div>
-              </div>
+              ) : (
+                // Not in cart - Simplified version
+                <div className="space-y-1.5">
+                  {/* Ultra Compact Quantity Selector */}
+                  <div className="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-700 dark:to-slate-600 rounded-lg border border-gray-200 dark:border-slate-500 shadow-sm">
+                    <span className="text-xs font-medium text-gray-700 dark:text-slate-300">Qty:</span>
+                    <div className="flex items-center space-x-1.5">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
+                      >
+                        <MinusIcon className="h-3 w-3" />
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        max={isAdmin() ? product.stock : 999}
+                        value={quantity}
+                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-10 px-1 py-0.5 text-center border border-gray-300 dark:border-slate-400 bg-white dark:bg-slate-600 text-gray-900 dark:text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-orange-400 dark:focus:ring-amber-400 focus:border-orange-400 dark:focus:border-amber-400 font-semibold shadow-sm"
+                      />
+                      <button
+                        onClick={() => setQuantity(isAdmin() ? Math.min(product.stock, quantity + 1) : quantity + 1)}
+                        className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-600/40 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110"
+                      >
+                        <PlusIcon className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Ultra Compact Action Buttons */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <Button
+                      onClick={handleAddToCart}
+                      loading={isLoading}
+                      disabled={false}
+                      className="bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-amber-400 dark:to-orange-400 hover:from-yellow-500 hover:to-orange-600 dark:hover:from-amber-500 dark:hover:to-orange-500 text-white font-bold py-2 px-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs flex items-center justify-center h-9 transform hover:scale-[1.02]"
+                    >
+                      <ShoppingCartIcon className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
+                    
+                    <Link to={`/products/${productId}`} className="block">
+                      <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 hover:from-indigo-600 hover:to-purple-700 dark:hover:from-indigo-500 dark:hover:to-purple-600 text-white font-bold py-2 px-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs flex items-center justify-center h-9 transform hover:scale-[1.02]">
+                        <EyeIcon className="h-3 w-3 mr-1" />
+                        Details
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              )
+            ) : (
+              // Out of stock - Only show to admins
+              isAdmin() && (
+                <div className="p-1.5 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-600/50 rounded-md text-center">
+                  <p className="text-red-700 dark:text-red-400 font-medium text-xs">Out of Stock</p>
+                </div>
+              )
             )
           ) : (
-            // Out of stock - Only show to admins
-            isAdmin() && (
-              <div className="p-1.5 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-600/50 rounded-md text-center">
-                <p className="text-red-700 dark:text-red-400 font-medium text-xs">Out of Stock</p>
-              </div>
-            )
+            // User is not authenticated - Show only view details and login prompt
+            <div className="space-y-1.5">
+              <Link to={`/products/${productId}`} className="block">
+                <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 hover:from-indigo-600 hover:to-purple-700 dark:hover:from-indigo-500 dark:hover:to-purple-600 text-white font-bold py-2 px-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-xs h-9 flex items-center justify-center transform hover:scale-[1.02]">
+                  <EyeIcon className="h-3 w-3 mr-1.5" />
+                  View Details
+                </button>
+              </Link>
+              
+              {/* Login Prompt */}
+              <Link to="/login" className="block">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-600/50 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors duration-200 cursor-pointer">
+                  <p className="text-blue-700 dark:text-blue-400 text-xs font-medium text-center">
+                    🔐 Login to purchase this product
+                  </p>
+                </div>
+              </Link>
+            </div>
           )}
         </div>
-
-        {/* Ultra Compact Login Prompt */}
-        {!isAuthenticated && (
-          <Link to="/login" className="block mt-1.5">
-            <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-600/50 rounded-md hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors duration-200 cursor-pointer">
-              <p className="text-blue-700 dark:text-blue-400 text-xs font-medium text-center">
-                🔐 Login to buy this product
-              </p>
-            </div>
-          </Link>
-        )}
       </div>
     </div>
   );
